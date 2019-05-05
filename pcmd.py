@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
 # Parallel Command executor on remote servers
-#
+# If you encounter any bug, please report to ranjithkth@gmail.com
 
 import datetime
 import threading
