@@ -7,6 +7,8 @@ create a file called nodelist in the same directory with all your server names. 
 
 now simple run pcmd.py as below
 
+./pcmd.py "cat /etc/resolv.conf"
+
 ```
 [root@localhost pcmd]# more nodelist 
 k8s-node1
