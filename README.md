@@ -5,7 +5,7 @@ Below is a simple example shows how we can get DNS server details from two remot
 
 create a file called nodelist in the same directory with all your server names. (Assuming servers are configured with password less SSH)
 
-now simple run pcmd.py as below
+now simply run pcmd.py as below
 
 ./pcmd.py "cat /etc/resolv.conf"
 
