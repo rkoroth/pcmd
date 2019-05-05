@@ -33,6 +33,6 @@ nameserver 192.168.1.1
 
 [root@localhost pcmd]# 
 ```
-
+Similary any command you can pass to this script as argument and can run on thousands of machines in parallel.
 
 
