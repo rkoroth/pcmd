@@ -13,21 +13,21 @@ import socket
 VER = "1.0"
 
 def usg():
-    print ""
-    print "USAGE"
-    print "         ./pcmd.py [command]..."
-    print ""
-    print "EXAMPLE"
-    print "         ./pcmd.py 'uname -a'"
-    print ""
-    print "ADDITIONAL INFO"
-    print "         Create a file called 'nodelist' with server names in it"
-    print ""
+    print ("")
+    print ("USAGE")
+    print ("         ./pcmd.py [command]...")
+    print ("")
+    print ("EXAMPLE")
+    print ("         ./pcmd.py 'uname -a'")
+    print ("")
+    print ("ADDITIONAL INFO")
+    print ("         Create a file called 'nodelist' with server names in it")
+    print ("")
 
 try:
     cmd = sys.argv[1]
     if (cmd == "-V"):
-        print "Version: %s" % VER
+        print ("Version: %s" % VER)
         sys.exit()
 except IndexError:
     usg()
@@ -35,10 +35,10 @@ except IndexError:
 
 def succ(x):
     CT = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S %Z")
-    print "%s  [SUCCESS]  %s" % (CT,x)
+    print ("%s  [SUCCESS]  %s" % (CT,x))
 def fail(x):
     CT = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S %Z")
-    print "%s  [FAIL]     %s" % (CT,x)
+    print ("%s  [FAIL]     %s" % (CT,x))
 
 
 def sshcheck():
@@ -61,8 +61,8 @@ def remcmd(s, c):
         fail("Command execution on %s" % s)
    else:
         succ("Command execution on %s" % s)
-        print "Server Name %s" % s
-        print stdout
+        print ("Server Name %s" % s)
+        print (stdout)
  
 def multicmd():
     with open ('nodelist') as n:
