@@ -24,13 +24,10 @@ def usg():
     print ("         Create a file called 'nodelist' with server names in it")
     print ("")
 
-try:
+if sys.argv[1]:
     cmd = sys.argv[1]
-    if (cmd == "-V"):
-        print ("Version: %s" % VER)
-        sys.exit()
-except IndexError:
-    usg()
+if (cmd == "-V"):
+    print ("Version: %s" % VER)
     sys.exit()
 
 def succ(x):
@@ -66,12 +63,22 @@ def remcmd(s, c):
  
 def multicmd():
     with open ('nodelist') as n:
-        for i in n:
-            s=i.split("\n")[0]
-            threading.Thread(target=remcmd, args=(s,cmd,)).start()
-        for i in n:
-            s=i.split("\n")[0]
-            threading.Thread(target=remcmd, args=(s,cmd,)).join
+        for line in n:
+            if ";" not in line:
+                server = line.strip()
+                command = cmd
+            else:
+                server  = line.split(";")[0]
+                command = line.split(";")[1].strip()
+            threading.Thread(target=remcmd, args=(server,command,)).start()
+        for line in n:
+            if ";" not in line:
+                server = line.strip()
+                command = cmd
+            else:
+                server  = line.split(";")[0]
+                command = line.split(";")[1].strip()
+            threading.Thread(target=remcmd, args=(server,command,)).join
     n.close()
 
 sshcheck()
