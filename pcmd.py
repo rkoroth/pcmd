@@ -1,7 +1,6 @@
 #!/usr/bin/python
 #
 # Parallel Command executor on remote servers
-# If you encounter any bug, please report to ranjithkth@gmail.com
 
 import datetime
 import threading
@@ -21,14 +20,15 @@ def usg():
     print ("         ./pcmd.py 'uname -a'")
     print ("")
     print ("ADDITIONAL INFO")
-    print ("         Create a file called 'nodelist' with server names in it")
+    print ("         Create a file called 'nodelist' with server names and commands(if any) in it")
+    print ("         if there is no command against a server in the 'nodelist' file, the command in the argument will be executed")
     print ("")
 
-if sys.argv[1]:
+if len(sys.argv) > 1:
     cmd = sys.argv[1]
-if (cmd == "-V"):
-    print ("Version: %s" % VER)
-    sys.exit()
+    if (cmd == "-V"):
+        print ("Version: %s" % VER)
+        sys.exit()
 
 def succ(x):
     CT = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S %Z")
@@ -41,7 +41,10 @@ def fail(x):
 def sshcheck():
     with open ('nodelist') as n:
         for i in n:
-            s=i.split("\n")[0]
+            if ";" in i:
+                s=i.split(";")[0]
+            else:
+                s=i.strip()
             process = Popen(['ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@%s uname -a' % (s)], stdout=PIPE, stderr=PIPE, shell=True)
             stdout, stderr = process.communicate()
             if (process.returncode != 0):
@@ -49,6 +52,7 @@ def sshcheck():
                sys.exit()
             else:
                succ("SSH connectivity %s" % s)
+    succ("All node are connecting, proceeding with command execution")
     n.close()
 
 def remcmd(s, c):
@@ -57,8 +61,10 @@ def remcmd(s, c):
    if (process.returncode != 0):
         fail("Command execution on %s" % s)
    else:
-        succ("Command execution on %s" % s)
+        succ("Command %s execution on %s" % (c, s))
+        print ("############################################")
         print ("Server Name %s" % s)
+        stdout = stdout.decode("utf-8")
         print (stdout)
  
 def multicmd():
