@@ -3,7 +3,7 @@ pcmd is a simple command line tool for running different commands on multiple re
 
 Below is a simple example shows how we can get DNS server details from two remote servers.
 
-create a file called nodelist in the same directory with all your server names. (Assuming servers are configured with password less SSH)
+create a file called nodelist in the same directory with all your server names and the command seperated by ";". (Assuming servers are configured with password less SSH)
 
 now simply run pcmd.py as below
 
