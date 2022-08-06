@@ -8,6 +8,7 @@ import subprocess
 from subprocess import Popen, PIPE
 import sys
 import socket
+import os
 
 VER = "1.0"
 
@@ -36,9 +37,21 @@ def succ(x):
 def fail(x):
     CT = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S %Z")
     print ("%s  [FAIL]     %s" % (CT,x))
+def info(x):
+    CT = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S %Z")
+    print ("%s  [INFO]     %s" % (CT,x))
+
+
+def validateNodelist():
+    if os.path.isfile("nodelist"):
+        succ("nodelist file found. Proceeding further")
+    else:
+        fail("Missing nodelist file")
+        sys.exit(1)
 
 
 def sshcheck():
+    info("Validating SSH connectivity")
     with open ('nodelist') as n:
         for i in n:
             if ";" in i:
@@ -87,5 +100,7 @@ def multicmd():
             threading.Thread(target=remcmd, args=(server,command,)).join
     n.close()
 
+#MAIN
+validateNodelist()
 sshcheck()
 multicmd()
