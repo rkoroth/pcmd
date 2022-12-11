@@ -10,7 +10,7 @@ import sys
 import socket
 import os
 
-VER = "1.0"
+VER = "1.01"
 
 def usg():
     print ("")
@@ -31,27 +31,56 @@ if len(sys.argv) > 1:
         print ("Version: %s" % VER)
         sys.exit()
 
-def succ(x):
-    CT = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S %Z")
-    print ("%s  [SUCCESS]  %s" % (CT,x))
-def fail(x):
-    CT = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S %Z")
-    print ("%s  [FAIL]     %s" % (CT,x))
-def info(x):
-    CT = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S %Z")
-    print ("%s  [INFO]     %s" % (CT,x))
+
+class LogWrite:
+  
+    def __init__(self, logFile):
+        self.logFile = logFile
+
+    def write(self, level, message):
+    
+        if self.logFile:
+          logging = True
+        
+        CT = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S %Z")
+        if level == "success":
+            logData = "{} [SUCCESS] {}".format(CT, message)
+            print (logData)
+        elif level == "fail":
+            logData = "{} [FAIL] {}".format(CT, message)
+            print (logData)
+        elif level == "info":
+            logData = "{} [INFO] {}".format(CT, message)
+            print (logData)        
+        elif level == "error":
+            logData = "{} [ERROR] {}".format(CT, message)
+            print (logData)
+        elif level == "warning":
+            logData = "{} [WARNING] {}".format(CT, message)
+            print (logData)
+        elif level == "passed":
+            logData = "{} [PASSED] {}".format(CT, message)
+            print (logData)
+
+        if logging:
+           logFileHandler = open(self.logFile, "aw")  
+           logFileHandler.write(logData + "\n")
+           logFileHandler.close()   
+
+log_file = "pcmd.log"
+stdoutmsg =  LogWrite(log_file)   
 
 
 def validateNodelist():
     if os.path.isfile("nodelist"):
-        succ("nodelist file found. Proceeding further")
+        stdoutmsg.write("success", "nodelist file found. Proceeding further")
     else:
-        fail("Missing nodelist file")
+        stdoutmsg.write("fail", "Missing nodelist file")
         sys.exit(1)
 
 
 def sshcheck():
-    info("Validating SSH connectivity")
+    stdoutmsg.write("info", "Validating SSH connectivity")
     with open ('nodelist') as n:
         for i in n:
             if ";" in i:
@@ -61,20 +90,20 @@ def sshcheck():
             process = Popen(['ssh -q -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@%s uname -a' % (s)], stdout=PIPE, stderr=PIPE, shell=True)
             stdout, stderr = process.communicate()
             if (process.returncode != 0):
-               fail("SSH connectivity %s" % s)
+               stdoutmsg.write("fail", "SSH connectivity {}".format(s))
                sys.exit()
             else:
-               succ("SSH connectivity %s" % s)
-    succ("All node are connecting, proceeding with command execution")
+               stdoutmsg.write("success", "SSH connectivity {}".format(s))
+    stdoutmsg.write("success", "All node are connecting, proceeding with command execution")
     n.close()
 
 def remcmd(s, c):
    process = Popen(['ssh -q %s %s' % (s, c)], stdout=PIPE, stderr=PIPE, shell=True)
    stdout, stderr = process.communicate()
    if (process.returncode != 0):
-        fail("Command execution on %s" % s)
+        stdoutmsg.write("fail", "Command execution on {}".format(s))
    else:
-        succ("Command %s execution on %s" % (c, s))
+        stdoutmsg.write("success", "Command {} execution on {}".format(c, s))
         print ("############################################")
         print ("Server Name %s" % s)
         stdout = stdout.decode("utf-8")
