@@ -9,6 +9,7 @@ from subprocess import Popen, PIPE
 import sys
 import socket
 import os
+import argparse
 
 VER = "1.01"
 
@@ -70,13 +71,16 @@ class LogWrite:
 log_file = "pcmd.log"
 stdoutmsg =  LogWrite(log_file)   
 
-
-def validateNodelist():
-    if os.path.isfile("nodelist"):
-        stdoutmsg.write("success", "nodelist file found. Proceeding further")
+def validateNodelist(input_file):
+    if os.path.isfile(input_file):
+        stdoutmsg.write("success", "{} file found. Proceeding further".format(nodelist))
     else:
         stdoutmsg.write("fail", "Missing nodelist file")
         sys.exit(1)
+        
+def buildCommandAndNodes(nodes, command):
+    nodelist = nodes
+    command = command
 
 
 def sshcheck():
@@ -129,7 +133,18 @@ def multicmd():
             threading.Thread(target=remcmd, args=(server,command,)).join
     n.close()
 
-#MAIN
-validateNodelist()
-sshcheck()
-multicmd()
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description = "Parallel Command Executor")
+    parser.add_argument("-f", "--file", metavar="", help="Input file with nodes and commands")
+    parser.add_argument("-n", "--nodes", metavar="", help="Comma seperated nodes")
+    parser.add_argument("-c", "--command", metavar="", help="Command string")
+    
+    args = parser.parse_args()
+
+    if args.file:
+        validateNodelist(args.file)
+    else:
+        buildCommandAndNodes(args.nodes, args.command)
+    sshcheck()
+    multicmd()
